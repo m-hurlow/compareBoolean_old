@@ -30,6 +30,14 @@ class TestEvaluationFunction(unittest.TestCase):
         result = evaluation_function(response, answer, params)
 
         self.assertEqual(result.get("is_correct"), True)
+    
+    def test_and_or_equiv(self):
+        response = "(~x & ~y & ~z) | ( ~x & ~y & z)"
+        answer = "~x & ~y"
+        params = Params()
+        result = evaluation_function(response, answer, params)
+
+        self.assertEqual(result.get("is_correct"), True)
 
 
 if __name__ == "__main__":

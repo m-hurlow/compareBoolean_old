@@ -1,5 +1,7 @@
 from typing import Any, TypedDict
 
+from .lex import Lexer
+from .parse import parse_boolean, print_expr
 
 class Params(TypedDict):
     pass
@@ -7,7 +9,7 @@ class Params(TypedDict):
 
 class Result(TypedDict):
     is_correct: bool
-
+    
 
 def evaluation_function(response: Any, answer: Any, params: Params) -> Result:
     """
@@ -32,5 +34,11 @@ def evaluation_function(response: Any, answer: Any, params: Params) -> Result:
     return types and that evaluation_function() is the main function used
     to output the evaluation response.
     """
+
+    tokens = Lexer(response).lex()
+    for token in tokens:
+        print(str(token))
+    expr = parse_boolean(list(reversed(tokens)))
+    print(print_expr(expr))
 
     return Result(is_correct=True)
