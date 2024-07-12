@@ -6,7 +6,8 @@ class Term:
         self.op = op
 
     def __str__(self) -> str:
-        return f"!{str(self.term)}" if self.op else str(self.term)
+        out = "" if not self.op else "!"
+        return out + str(self.term)
 
 class Prod:
     def __init__(self, left: Term, right: list[Term] = None):
@@ -14,7 +15,10 @@ class Prod:
         self.right = right
     
     def __str__(self) -> str:
-        return f"({str(self.left)}{f' & {str(self.right)}' if self.right == None else '' })"
+        out = "(" + str(self.left)
+        for right in self.right:
+            out += f" & {str(right)}"
+        return out + ")"
 
 class Expr:
     def __init__(self, left: Prod, right: list[Prod] = None):
@@ -22,7 +26,10 @@ class Expr:
         self.right = right
     
     def __str__(self) -> str:
-        return f"({str(self.left)}{f' | {str(self.right)}' if self.right == None else '' })"
+        out = "(" + str(self.left)
+        for right in self.right:
+            out += f" | {str(right)}"
+        return out + ")"
  
 def expect(tokens: list[Token], type: TokenType) -> bool:
     token = tokens.pop()
@@ -92,25 +99,3 @@ def parse_boolean(tokens: list[Token]) -> Expr:
         right.append(new_right)
     
     return Expr(left, right)
-
-def print_term(term: Term):
-    out = ""
-    if term.op:
-        out += '!'
-    if isinstance(term.term, str):
-        out += term.term
-    else:
-        out += print_expr(term.term, rec=True)
-    return out
-
-def print_prod(prod: Prod):
-    out = "(" + print_term(prod.left)
-    for right in prod.right:
-        out += f" & {print_term(right)}"
-    return out + ")"
-
-def print_expr(expr: Expr, rec=False):
-    out = "(" + print_prod(expr.left)
-    for right in expr.right:
-        out += f" | {print_prod(right)}"
-    return out + ")" + ("" if rec else "\n")

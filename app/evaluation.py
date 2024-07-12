@@ -1,7 +1,7 @@
 from typing import Any, TypedDict
 
 from .lex import Lexer
-from .parse import parse_boolean, print_expr
+from .parse import parse_boolean
 
 class Params(TypedDict):
     pass
@@ -39,6 +39,6 @@ def evaluation_function(response: Any, answer: Any, params: Params) -> Result:
     for token in tokens:
         print(str(token))
     expr = parse_boolean(list(reversed(tokens)))
-    print(print_expr(expr))
+    print(expr)
 
     return Result(is_correct=True)
