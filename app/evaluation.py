@@ -1,7 +1,10 @@
 from typing import Any, TypedDict
 
+from sympy.logic.boolalg import Boolean, simplify_logic
+
 from .lex import Lexer
 from .parse import parse_boolean
+from .similarity import conv_expr
 
 class Params(TypedDict):
     pass
@@ -10,6 +13,22 @@ class Params(TypedDict):
 class Result(TypedDict):
     is_correct: bool
     
+def get_sympy_expr(input: str) -> Boolean:
+    # Tokenise the input string
+    tokens = Lexer(input).lex()
+    for token in tokens:
+        print(str(token))
+    # Attempt to parse the tokens into an AST
+    expr = parse_boolean(list(reversed(tokens)))
+    print(expr)
+
+    if expr == None:
+        return None
+
+    # Walk the tree, converting the result into a sympy boolean expression
+    sympy_expr = conv_expr(expr)
+    print(sympy_expr)
+    return sympy_expr
 
 def evaluation_function(response: Any, answer: Any, params: Params) -> Result:
     """
@@ -35,10 +54,7 @@ def evaluation_function(response: Any, answer: Any, params: Params) -> Result:
     to output the evaluation response.
     """
 
-    tokens = Lexer(response).lex()
-    for token in tokens:
-        print(str(token))
-    expr = parse_boolean(list(reversed(tokens)))
-    print(expr)
+    response_expr = get_sympy_expr(response)
+    answer_expr = get_sympy_expr(answer)
 
-    return Result(is_correct=True)
+    return Result(is_correct=simplify_logic(response_expr, form="cnf").equals(simplify_logic(answer_expr, form="cnf")))

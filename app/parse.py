@@ -21,14 +21,14 @@ class Prod:
         return out + ")"
 
 class Expr:
-    def __init__(self, left: Prod, right: list[Prod] = None):
+    def __init__(self, left: Prod, right: list[bool, Prod] = None):
         self.left = left
         self.right = right
     
     def __str__(self) -> str:
         out = "(" + str(self.left)
-        for right in self.right:
-            out += f" | {str(right)}"
+        for xor, right in self.right:
+            out += f" {'^' if xor else '|'} {str(right)}"
         return out + ")"
  
 def expect(tokens: list[Token], type: TokenType) -> bool:
@@ -40,7 +40,7 @@ def expect(tokens: list[Token], type: TokenType) -> bool:
         return False
 
 # Grammar:
-# expr = prod (or prod)*
+# expr = prod ([or | xor] prod)*
 # prod = term (and term)*
 # term = (unary) [variable | '(' expr ')']
 
@@ -91,11 +91,13 @@ def parse_boolean(tokens: list[Token]) -> Expr:
         return None
     print(f"Left: {left}")
     right = []
-    while expect(tokens, TokenType.OR):
+    next_token = tokens[-1].type
+    while expect(tokens, TokenType.OR) or expect(tokens, TokenType.XOR):
         new_right = parse_prod(tokens)
         if new_right == None:
             return None
         print(f"New right: {new_right}")
-        right.append(new_right)
+        right.append((next_token == TokenType.XOR, new_right))
+        next_token = tokens[-1].type
     
     return Expr(left, right)

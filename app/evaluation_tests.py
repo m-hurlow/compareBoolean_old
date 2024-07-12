@@ -25,15 +25,17 @@ class TestEvaluationFunction(unittest.TestCase):
     as it should.
     """
 
-    def test_returns_is_correct_true(self):
-        response, answer, params = None, None, Params()
+    def test_and_or_equiv(self):
+        response = "(~x & ~y & ~z) | ( ~x & ~y & z)"
+        answer = "~x & ~y"
+        params = Params()
         result = evaluation_function(response, answer, params)
 
         self.assertEqual(result.get("is_correct"), True)
     
-    def test_and_or_equiv(self):
-        response = "(~x & ~y & ~z) | ( ~x & ~y & z)"
-        answer = "~x & ~y"
+    def test_xor_equiv(self):
+        response = "a & ~b | ~a & b"
+        answer = "a ^ b"
         params = Params()
         result = evaluation_function(response, answer, params)
 

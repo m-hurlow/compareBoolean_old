@@ -9,6 +9,7 @@ class TokenType(Enum):
     VARIABLE = 6
     UNKNOWN = 7
     EOF = 8
+    XOR = 9
 
 class Token:
     def __init__(self, type: TokenType, value=None):
@@ -20,9 +21,10 @@ class Token:
 
 class Lexer:
     def __init__(self, input: str):
-        self.input = input
+        self.input = input + " " # The space fixes an off-by-one in the lexer
     
     def lex(self) -> list[Token]:
+        print(f"Lexing {self.input}")
         tokens = []
         if len(self.input) == 0:
             return tokens
@@ -43,6 +45,8 @@ class Lexer:
                 return TokenType.AND
             elif char == '|':
                 return TokenType.OR
+            elif char == '^':
+                return TokenType.XOR
             elif char.isalpha():
                 return TokenType.VARIABLE
             else:
